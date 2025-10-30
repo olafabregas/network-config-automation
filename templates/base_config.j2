@@ -1,0 +1,79 @@
+{# Base Configuration Template for Cisco IOS Devices #}
+{# This template provides fundamental device configuration #}
+
+hostname {{ hostname }}
+!
+{{ banner }}
+!
+{# DNS and Domain Configuration #}
+no ip domain-lookup
+ip domain-name {{ domain_name }}
+!
+{# NTP Configuration #}
+{% if ntp_servers %}
+{% for ntp_server in ntp_servers %}
+ntp server {{ ntp_server }}
+{% endfor %}
+{% endif %}
+!
+{# DNS Servers #}
+{% if name_servers %}
+{% for name_server in name_servers %}
+ip name-server {{ name_server }}
+{% endfor %}
+{% endif %}
+!
+{# Logging Configuration #}
+logging buffered 51200 informational
+logging console critical
+!
+{# Enable SSH #}
+crypto key generate rsa modulus 2048
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+!
+{# AAA Configuration (Basic) #}
+aaa new-model
+aaa authentication login default local
+aaa authorization exec default local
+!
+{# Console Line Configuration #}
+line con 0
+ logging synchronous
+ exec-timeout {{ console_timeout }}
+ stopbits 1
+!
+{# VTY Line Configuration #}
+line vty 0 4
+ login local
+ transport input ssh
+ exec-timeout {{ vty_timeout }}
+line vty 5 15
+ login local
+ transport input ssh
+ exec-timeout {{ vty_timeout }}
+!
+{# Service Configuration #}
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+{# Interface Descriptions (if provided) #}
+{% if interfaces %}
+{% for interface in interfaces %}
+interface {{ interface.name }}
+ description {{ interface.description }}
+{% if interface.ip_address %}
+ ip address {{ interface.ip_address }} {{ interface.subnet_mask }}
+{% endif %}
+{% if interface.shutdown %}
+ shutdown
+{% else %}
+ no shutdown
+{% endif %}
+!
+{% endfor %}
+{% endif %}
+!
+end

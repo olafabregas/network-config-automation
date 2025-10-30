@@ -1,0 +1,70 @@
+{# OSPF Configuration Template for Cisco IOS #}
+{# Configures OSPF routing protocol with specified parameters #}
+
+router ospf {{ process_id }}
+ router-id {{ router_id }}
+{% if log_adjacency_changes %}
+ log-adjacency-changes
+{% endif %}
+{% if auto_cost_reference_bandwidth %}
+ auto-cost reference-bandwidth {{ auto_cost_reference_bandwidth }}
+{% endif %}
+!
+{# Passive Interfaces #}
+{% if passive_interfaces %}
+{% for interface in passive_interfaces %}
+ passive-interface {{ interface }}
+{% endfor %}
+{% endif %}
+!
+{# Network Statements #}
+{% if networks %}
+{% for network in networks %}
+ network {{ network.address }} {{ network.wildcard }} area {{ network.area }}
+{% endfor %}
+{% endif %}
+!
+{# Default Information Originate #}
+{% if default_information %}
+ default-information originate{% if default_information.always %} always{% endif %}{% if default_information.metric %} metric {{ default_information.metric }}{% endif %}
+{% endif %}
+!
+{# Area Configuration #}
+{% if areas %}
+{% for area in areas %}
+{% if area.stub %}
+ area {{ area.id }} stub{% if area.no_summary %} no-summary{% endif %}
+{% endif %}
+{% if area.authentication %}
+ area {{ area.id }} authentication{% if area.authentication == "message-digest" %} message-digest{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+!
+{# Interface-specific OSPF Configuration #}
+{% if interface_config %}
+{% for interface in interface_config %}
+interface {{ interface.name }}
+{% if interface.ospf_priority %}
+ ip ospf priority {{ interface.ospf_priority }}
+{% endif %}
+{% if interface.ospf_cost %}
+ ip ospf cost {{ interface.ospf_cost }}
+{% endif %}
+{% if interface.ospf_hello_interval %}
+ ip ospf hello-interval {{ interface.ospf_hello_interval }}
+{% endif %}
+{% if interface.ospf_dead_interval %}
+ ip ospf dead-interval {{ interface.ospf_dead_interval }}
+{% endif %}
+{% if interface.ospf_authentication %}
+ ip ospf authentication{% if interface.ospf_authentication == "message-digest" %} message-digest{% endif %}
+{% endif %}
+{% if interface.ospf_authentication_key %}
+ ip ospf message-digest-key 1 md5 {{ interface.ospf_authentication_key }}
+{% endif %}
+!
+{% endfor %}
+{% endif %}
+!
+end

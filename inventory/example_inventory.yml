@@ -1,0 +1,103 @@
+# Example Network Device Inventory
+# This file contains connection information for network devices
+# Credentials should be stored in environment variables (see .env.example)
+
+devices:
+  - name: "Core-Switch-01"
+    host: "192.168.1.10"
+    device_type: "cisco_ios"
+    port: 22
+    role: "core-switch"
+    site: "datacenter-1"
+    tags:
+      - production
+      - core
+
+  - name: "Core-Switch-02"
+    host: "192.168.1.11"
+    device_type: "cisco_ios"
+    port: 22
+    role: "core-switch"
+    site: "datacenter-1"
+    tags:
+      - production
+      - core
+
+  - name: "Dist-Switch-01"
+    host: "192.168.1.20"
+    device_type: "cisco_ios"
+    port: 22
+    role: "distribution-switch"
+    site: "datacenter-1"
+    tags:
+      - production
+      - distribution
+
+  - name: "Access-Switch-01"
+    host: "192.168.1.30"
+    device_type: "cisco_ios"
+    port: 22
+    role: "access-switch"
+    site: "building-a"
+    tags:
+      - production
+      - access
+
+  - name: "Router-01"
+    host: "192.168.1.1"
+    device_type: "cisco_ios"
+    port: 22
+    role: "edge-router"
+    site: "datacenter-1"
+    tags:
+      - production
+      - routing
+
+# Device groups for bulk operations
+groups:
+  core_switches:
+    - "Core-Switch-01"
+    - "Core-Switch-02"
+
+  distribution_switches:
+    - "Dist-Switch-01"
+
+  access_switches:
+    - "Access-Switch-01"
+
+  all_switches:
+    - "Core-Switch-01"
+    - "Core-Switch-02"
+    - "Dist-Switch-01"
+    - "Access-Switch-01"
+
+  routers:
+    - "Router-01"
+
+# Configuration variables per device
+device_vars:
+  Core-Switch-01:
+    hostname: "CORE-SW-01"
+    domain_name: "company.local"
+    ntp_servers:
+      - "10.0.0.1"
+      - "10.0.0.2"
+    name_servers:
+      - "8.8.8.8"
+      - "8.8.4.4"
+    console_timeout: "30 0"
+    vty_timeout: "15 0"
+    banner: "banner motd # Unauthorized access prohibited! #"
+
+  Core-Switch-02:
+    hostname: "CORE-SW-02"
+    domain_name: "company.local"
+    ntp_servers:
+      - "10.0.0.1"
+      - "10.0.0.2"
+    name_servers:
+      - "8.8.8.8"
+      - "8.8.4.4"
+    console_timeout: "30 0"
+    vty_timeout: "15 0"
+    banner: "banner motd # Unauthorized access prohibited! #"
