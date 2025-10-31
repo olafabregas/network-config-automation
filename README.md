@@ -48,7 +48,6 @@ Usage instructions to be added in a later checkpoint.
 
 ---
 
-This repository follows the checkpoint requirements for Checkpoint 1.
 
 ```
 

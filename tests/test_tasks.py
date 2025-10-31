@@ -3,7 +3,7 @@ Unit tests for the tasks module.
 Tests configuration task orchestration and automation.
 """
 
-import pytest
+import pytest  # type: ignore[reportMissingImports]
 from unittest.mock import patch, MagicMock
 from typing import List, Dict, Any
 
@@ -293,8 +293,18 @@ class TestConfigurationTask:
         assert summary["total_devices"] == 2
         assert summary["failed"] >= 1
     
-    def test_no_config_commands_error(self, config_task: ConfigurationTask):
+    @patch("netauto.tasks.NetworkDevice")
+    def test_no_config_commands_error(
+        self,
+        mock_network_device: MagicMock,
+        config_task: ConfigurationTask,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
         """Test error when no configuration provided."""
+        # ensure required credentials are present for this test run
+        monkeypatch.setenv("DEVICE_USERNAME", "testuser")
+        monkeypatch.setenv("DEVICE_PASSWORD", "testpass")
+
         result: Dict[str, Any] = config_task.configure_device(
             device_info={"host": "192.168.1.1"},
         )

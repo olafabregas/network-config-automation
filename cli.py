@@ -6,7 +6,7 @@ Command-line interface for network automation tasks.
 
 import argparse
 import sys
-import yaml
+import yaml  # type: ignore[reportMissingModuleSource]
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
@@ -16,15 +16,19 @@ Progress: Any = None
 console: Optional[Any] = None
 rich_available: bool = False
 
-try:
-    from rich.console import Console as _Console
-    from rich.progress import Progress as _Progress
+from typing import cast
 
-    Console = _Console
-    Progress = _Progress
+try:
+    from rich.console import Console as _Console  # type: ignore[reportMissingImports]
+    from rich.progress import Progress as _Progress  # type: ignore[reportMissingImports]
+
+    # Cast unknown third-party types to Any for the type checker while keeping
+    # the runtime classes available when Rich is installed.
+    Console = cast(Any, _Console)
+    Progress = cast(Any, _Progress)
     rich_available = True
     # instantiate console only when rich is available
-    console = Console()
+    console = cast(Optional[Any], Console())
 except ImportError:
     rich_available = False
 
